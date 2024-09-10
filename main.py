@@ -1,12 +1,7 @@
 ###3 projeto python D.I.O. Sistema bancário V1 operações básicas como Deposito, saque e extrato###
+
 import time
-
-#função para deposito
-
-#Deve ser possível depositar valores positivos para a minha conta bancária. A v1 do projeto trabalha apenas com 1
-#usuário, dessa forma não precisamos nos preocupar em identificar qual é o número da agência e conta bancária. Todos os
-#depósitos devem ser armazenados em uma variável e exibidos na operação de extrato.
-
+import sys
 
 #função pra verificar se o numero é positivo
 def numero_valido(numero):
@@ -14,6 +9,12 @@ def numero_valido(numero):
         return True
     else:
         return False
+
+#função para deposito
+
+#Deve ser possível depositar valores positivos para a minha conta bancária. A v1 do projeto trabalha apenas com 1
+#usuário, dessa forma não precisamos nos preocupar em identificar qual é o número da agência e conta bancária. Todos os
+#depósitos devem ser armazenados em uma variável e exibidos na operação de extrato.
 
 def deposito(valor, saldo):
     saldo += valor
@@ -24,18 +25,16 @@ def depositar(saldo, movimentacoes):
     while True:
         try:
             valor = float(input('Digite o valor do depósito: '))
-            if numero_valido(numero=valor) == True:
+            if numero_valido(numero=valor):
                 saldo_atualizado = deposito(valor=valor, saldo=saldo)
                 movimentacoes.append('Depósito: R$' + f'{valor:.2f}'.rjust(68, "_"))
                 return saldo_atualizado
-                break
             else:
                 print('\n' + 'O valor para depósito deve ser maior que zero'.center(80, "_"))
                 continue
         except ValueError:
             print('\n' + 'Digite um valor válido'.center(80, "#"))
             continue
-
 
 #função para saque
 
@@ -53,32 +52,29 @@ def sacar(saldo, movimentacoes, limite):
         try:
             valor = float(input('Digite o valor do saque: '))
 
-            if numero_valido(numero=valor) == True:
+            if numero_valido(numero=valor):
                 valor_a_sacar = valor
             else:
                 valor_a_sacar = valor * -1
 
-            if saldo >= valor_a_sacar:
-                if valor_a_sacar <= limite:
+            if valor_a_sacar <= limite:
+                if saldo >= valor_a_sacar:
                     saldo_atualizado = saque(valor=valor_a_sacar, saldo=saldo)
                     movimentacoes.append('Saque: R$' + f'{valor_a_sacar:.2f}'.rjust(71, "_"))
                     return saldo_atualizado
-                    break
                 else:
-                    print('\n' + f'O valor máximo permitido para saque é de R$ {limite:.2f}'.center(80, "_"))
-                    continue
+                    print('\n' + 'Saldo insuficiente, operação não realizada'.center(80, "_"))
+                    opcao = input('Deseja continuar? [s] Sim [n]Não\n =>')
+                    if opcao == 's':
+                        continue
+                    elif opcao == 'n':
+                        break
+                    else:
+                        print('\n' + 'Digite uma opção válida'.center(80, "_"))
+                        break
             else:
-                print('\n' + 'Saldo insuficiente, operação não realizada'.center(80, "_"))
-                opcao = input("""
-Deseja continuar? [s] Sim [n] Não
-=>""")
-                if opcao == 's':
-                    continue
-                elif opcao == 'n':
-                    break
-                else:
-                    print('\n' + 'Digite uma opção válida'.center(80, "_"))
-                    break
+                print('\n' + f'O valor máximo permitido para saque é de R$ {limite:.2f}'.center(80, "_"))
+                continue
         except ValueError:
             print('Digite um valor válido'.center(80, "#"))
             continue
@@ -103,25 +99,33 @@ def extrato(saldo, movimentacoes):
             print(movimentacao)
     print('\n\nSaldo atual: R$' + f'{saldo:.2f}'.rjust(65, "_"))
 
+#funçoes para carregamento e cabeçalho
+
+def carregamento():
+    for i in range(3):
+        print("_".center(80, "_"))
+        time.sleep(0.5)
+
+def barra_loading():
+    for i in range(101):
+        mensagem = f'Carregando {i}%'
+        barra = mensagem.center(80, '_')
+        sys.stdout.write(f'\r{barra}')
+        sys.stdout.flush()
+        time.sleep(0.05)
+
 def cabecalho():
-    print("_".center(80, "_"))
-    time.sleep(2)
-    print("_".center(80, "_"))
-    time.sleep(2)
-    print("_".center(80, "_"))
-    time.sleep(2)
+    carregamento()
     print('Bem Vindo(a) ao SysBank'.center(80,"_"))
-    time.sleep(2)
-    print("_".center(80, "_"))
-    time.sleep(2)
-    print("_".center(80, "_"))
-    time.sleep(2)
-    print("_".center(80, "_"))
-    time.sleep(2)
+    time.sleep(0.5)
+    carregamento()
+    print('\n')
+    barra_loading()
     print('\n\n')
     print('Escolha uma opção para começar'.center(80, "_"))
 
 #função para menu
+
 def menu():
     opcao = input(
     '\n[d]' + 'Depositar\n'.rjust(78, '_') +
@@ -132,13 +136,13 @@ def menu():
     return opcao
 
 #função main
+
 def main():
     saldo = 0
     limite = 500
     movimentacoes = []
-    SAQUE_DIARIO = 3
+    __saque_diario__ = 3
     saques_realizados = 0
-
 
     cabecalho()
     while True:
@@ -147,7 +151,7 @@ def main():
             saldo = depositar(saldo=saldo, movimentacoes=movimentacoes)
             print('\n'+'Selecione uma Operação para Continuar'.center(80, "_"))
         elif opcao == 's':
-            if saques_realizados < SAQUE_DIARIO:
+            if saques_realizados < __saque_diario__:
                 saldo = sacar(saldo=saldo, limite=limite, movimentacoes=movimentacoes)
                 saques_realizados += 1
             else:

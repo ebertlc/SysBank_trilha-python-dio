@@ -106,13 +106,23 @@ def carregamento():
         print("_".center(80, "_"))
         time.sleep(0.5)
 
+
 def barra_loading():
+    total_largura = 80  # Largura total da linha
+    texto_base = 'Carregando'
+
     for i in range(101):
-        mensagem = f'Carregando {i}%'
-        barra = mensagem.center(80, '_')
-        sys.stdout.write(f'\r{barra}')
+        if i == 100:
+            texto_base = 'Carregado'
+
+        barra_largura = total_largura - len(texto_base) - 5  # 5 é o comprimento da porcentagem e espaço
+        barra = '_' * barra_largura
+
+        mensagem = f'{texto_base}{barra}[{i}%]'
+
+        sys.stdout.write(f'\r{mensagem}')
         sys.stdout.flush()
-        time.sleep(0.05)
+        time.sleep(0.03)
 
 def cabecalho():
     carregamento()
